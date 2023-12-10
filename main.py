@@ -90,14 +90,8 @@ class BSSApp:
         # Convert duration to the number of frames
         num_frames = int(48000 * duration)
 
-        #clipping
-        if num_frames < -32768:
-            num_frames = -32768
-        if num_frames > 32767:
-            num_frames = 32767
-
-        # Write the specified number of frames to the stream
-        stream.write(data[:num_frames].tobytes())
+        normalized_data = (data * 32767 / np.max(np.abs(data))).astype(np.int16)
+        stream.write(normalized_data.tobytes())
 
         # After the specified duration, stop the stream and close it
         self.root.after(int(duration * 1000), lambda: self.stop_audio(stream))
