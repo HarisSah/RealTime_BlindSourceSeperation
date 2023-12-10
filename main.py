@@ -52,8 +52,8 @@ class BSSApp:
         self.root.update()
 
         # Load mixed audio data
-        voice_1, fs_1 = self.read_wav("left_channel.wav") 
-        voice_2, fs_2 = self.read_wav("right_channel.wav") 
+        voice_1, fs_1 = self.read_wav("mix_type_2_1.wav") 
+        voice_2, fs_2 = self.read_wav("mix_type_2_2.wav") 
 
         # Reshape the files to have the same size
         m = min(len(voice_1), len(voice_2))
@@ -89,6 +89,12 @@ class BSSApp:
 
         # Convert duration to the number of frames
         num_frames = int(48000 * duration)
+
+        #clipping
+        if num_frames < -32768:
+            num_frames = -32768
+        if num_frames > 32767:
+            num_frames = 32767
 
         # Write the specified number of frames to the stream
         stream.write(data[:num_frames].tobytes())
