@@ -52,8 +52,8 @@ class BSSApp:
         self.root.update()
 
         # Load mixed audio data
-        voice_1, fs_1 = self.read_wav("mix_type_2_1.wav") 
-        voice_2, fs_2 = self.read_wav("mix_type_2_2.wav") 
+        voice_1, fs_1 = self.read_wav("Audio_Files/mix_type_2_1.wav") 
+        voice_2, fs_2 = self.read_wav("Audio_Files/mix_type_2_2.wav") 
 
         # Reshape the files to have the same size
         m = min(len(voice_1), len(voice_2))
@@ -100,7 +100,7 @@ class BSSApp:
         stream.stop_stream()
         stream.close()
 
-    def plot_signals(self):
+    def plot_signals(self): # the function implementation needs to be reworked
         if self.original_signal is not None and self.result_signal_1 is not None and self.result_signal_2 is not None:
             # Plot original and separated signals
             plt.figure(figsize=(12, 6))
