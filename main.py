@@ -23,7 +23,7 @@ class BSSApp:
         self.start_button = tk.Button(root, text="START", command=self.run_ica)
         self.play_button_2 = tk.Button(root, text="PLAY AUDIO 1", command=lambda: self.play_audio(self.result_signal_2, duration=5))
         self.play_button_3 = tk.Button(root, text="PLAY AUDIO 2", command=lambda: self.play_audio(self.result_signal_3, duration=5))
-        self.plot_button = tk.Button(root, text="PLOT", command=self.plot_signals)
+        self.plot_button = tk.Button(root, text="PLOT", command=lambda: self.plot_signals(color='red'))
         self.quit_button = tk.Button(root, text="QUIT", command=root.destroy)
 
         # Create status label
@@ -117,18 +117,22 @@ class BSSApp:
         stream.stop_stream()
         stream.close()
 
-    def plot_signals(self):
-        if self.original_signal is not None and self.result_signal_2 is not None:
+    def plot_signals(self, color = 'blue'):
+        if self.original_signal is not None and self.result_signal_2 is not None and self.result_signal_3 is not None:
             # Plot original and separated signals
             plt.figure(figsize=(12, 6))
 
-            plt.subplot(2, 1, 1)
-            plt.plot(self.original_signal)
+            plt.subplot(3, 1, 1)
+            plt.plot(self.original_signal, color = 'green')
             plt.title("Original Signal")
 
-            plt.subplot(2, 1, 2)
-            plt.plot(self.result_signal_2)
-            plt.title("Separated Signal")
+            plt.subplot(3, 1, 2)
+            plt.plot(self.result_signal_2, color = color)
+            plt.title("Separated Signal 1")
+
+            plt.subplot(3, 1, 3)
+            plt.plot(self.result_signal_3, color = color)
+            plt.title("Separated Signal 2")
 
             plt.tight_layout()
             plt.show()
