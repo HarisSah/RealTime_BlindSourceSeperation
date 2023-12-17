@@ -123,15 +123,15 @@ class BSSApp:
             plt.figure(figsize=(12, 6))
 
             plt.subplot(3, 1, 1)
-            plt.plot(self.original_signal, color = 'green')
+            plt.plot(self.original_signal)
             plt.title("Original Signal")
 
             plt.subplot(3, 1, 2)
-            plt.plot(self.result_signal_2, color = color)
+            plt.plot(self.result_signal_2, color = 'blue')
             plt.title("Separated Signal 1")
 
             plt.subplot(3, 1, 3)
-            plt.plot(self.result_signal_3, color = color)
+            plt.plot(self.result_signal_3, color = 'orange')
             plt.title("Separated Signal 2")
 
             plt.tight_layout()
