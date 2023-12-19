@@ -1,10 +1,14 @@
+#Realtime/Microphone Application
+
 import tkinter as tk
 import numpy as np
-from scipy.io import wavfile
 import matplotlib.pyplot as plt
 from sklearn.decomposition import FastICA
 import pyaudio
 import wave
+import struct
+import os
+
 
 # Wavefiles application
 class BSSApp:
@@ -19,11 +23,11 @@ class BSSApp:
         self.result_signal_3 = None
 
         # Create buttons
-        self.play_button_1 = tk.Button(root, text="PLAY ORIGINAL", command=lambda: self.original_audio())
+        
         self.start_button = tk.Button(root, text="START", command=self.run_ica)
         self.play_button_2 = tk.Button(root, text="PLAY AUDIO 1", command=lambda: self.play_audio(self.result_signal_2, duration=5))
         self.play_button_3 = tk.Button(root, text="PLAY AUDIO 2", command=lambda: self.play_audio(self.result_signal_3, duration=5))
-        self.plot_button = tk.Button(root, text="PLOT", command=lambda: self.plot_signals(color='red'))
+        
         self.quit_button = tk.Button(root, text="QUIT", command=root.destroy)
 
         # Create status label
@@ -31,10 +35,10 @@ class BSSApp:
 
         # Place buttons and label on the window
         self.start_button.pack(pady=10)
-        self.play_button_1.pack(pady=10)
+        
         self.play_button_2.pack(pady=10)
         self.play_button_3.pack(pady=10)
-        self.plot_button.pack(pady=10)
+        
         self.quit_button.pack(pady=10)
         self.status_label.pack(pady=10)
 
@@ -56,15 +60,59 @@ class BSSApp:
         sample_rate = wf.getframerate()
         wf.close()
         return signal, sample_rate
+    
+    def recording(self, duration = 5):
+        # Open wave files for left and right channels
+        left_wf = wave.open("temp_left_channel.wav", 'w')
+        right_wf = wave.open("temp_right_channel.wav", 'w')
+        left_wf.setnchannels(1)
+        right_wf.setnchannels(1)
+        left_wf.setsampwidth(2)
+        right_wf.setsampwidth(2)
+        left_wf.setframerate(48000)
+        right_wf.setframerate(48000)
+
+        # Open audio stream
+        stream = self.p.open(format=pyaudio.paInt16,
+                             channels=2,
+                             rate=48000,
+                             input=True,
+                             output=False)
+
+        # Record to wave files
+        for _ in range(int(48000 / 1024 * duration)):
+            binary_input_data = stream.read(1024, exception_on_overflow=False)
+            input_tuple = struct.unpack('h' * 2 * 1024, binary_input_data)
+
+            left_samples = [input_tuple[n] for n in range(0, 2 * 1024, 2)]
+            right_samples = [input_tuple[n + 1] for n in range(0, 2 * 1024, 2)]
+
+            left_binary_output_data = struct.pack('h' * 1024, *left_samples)
+            right_binary_output_data = struct.pack('h' * 1024, *right_samples)
+
+            left_wf.writeframes(left_binary_output_data)
+            right_wf.writeframes(right_binary_output_data)
+
+        # Close resources
+        stream.stop_stream()
+        stream.close()
+        
+        left_wf.close()
+        right_wf.close()
+
+    
 
     def run_ica(self):
-        # Change status label to "Processing..."
-        self.status_label.config(text="Processing...", fg="blue")
+        duration = 5 # Recording time
+        # Change status label to "Recording..."
+        self.status_label.config(text="Recording...", fg="red")
         self.root.update()
 
+        self.recording(duration)
+
         # Load mixed audio data
-        voice_1, fs_1 = self.read_wav("Audio_Files/mix_type_2_1.wav")
-        voice_2, fs_2 = self.read_wav("Audio_Files/mix_type_2_2.wav")
+        voice_1, fs_1 = self.read_wav("temp_left_channel.wav")
+        voice_2, fs_2 = self.read_wav("temp_right_channel.wav")
 
         # Reshape the files to have the same size
         m = min(len(voice_1), len(voice_2))
@@ -73,7 +121,7 @@ class BSSApp:
 
         # Mixing data
         voice = np.c_[voice_1, voice_2]
-        A = np.array([[1, 1], [0.5, 2]]) 
+        A = np.array([[1, 1], [0.5, 2]])
         X = np.dot(voice, A)
 
         # Blind source separation using ICA
@@ -82,21 +130,19 @@ class BSSApp:
         S_ = ica.transform(X)
 
         # Save estimated signals to WAV files
-        self.write_wav("estimated_voice_1.wav", S_[:, 0], fs_1)
-        self.write_wav("estimated_voice_2.wav", S_[:, 1], fs_2)
+        self.write_wav("estimated_voice_1_realtime.wav", S_[:, 0], fs_1)
+        self.write_wav("estimated_voice_2_realtime.wav", S_[:, 1], fs_2)
 
         # Update result signals for playback
         self.result_signal_2 = S_[:, 0]
         self.result_signal_3 = S_[:, 1]
 
-        # Load original mixed audio data (this is the part you were missing)
-        self.original_signal, _ = self.read_wav("Audio_Files/mix_type_2_1.wav")
+        # Remove temporary left and right wave files
+        os.remove("temp_left_channel.wav")
+        os.remove("temp_right_channel.wav")
 
         # Change status label to "READY"
         self.status_label.config(text="READY", fg="green")
-
-        # Call plot_signals to update the plot
-        self.plot_signals()
 
     def play_audio(self, data, duration):
         stream = self.p.open(format=pyaudio.paInt16,
@@ -116,26 +162,7 @@ class BSSApp:
         stream.stop_stream()
         stream.close()
 
-    def plot_signals(self, color = 'blue'):
-        if self.original_signal is not None and self.result_signal_2 is not None and self.result_signal_3 is not None:
-            # Plot original and separated signals
-            plt.figure(figsize=(12, 6))
-
-            plt.subplot(3, 1, 1)
-            plt.plot(self.original_signal)
-            plt.title("Original Signal")
-
-            plt.subplot(3, 1, 2)
-            plt.plot(self.result_signal_2, color = 'blue')
-            plt.title("Separated Signal 1")
-
-            plt.subplot(3, 1, 3)
-            plt.plot(self.result_signal_3, color = 'orange')
-            plt.title("Separated Signal 2")
-
-            plt.tight_layout()
-            plt.show()
-
+    
     def write_wav(self, file_path, data, sample_rate):
         normalized_data = (data * 32767 / np.max(np.abs(data))).astype(np.int16)
 
