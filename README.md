@@ -9,7 +9,7 @@ A very famous example of utilizing BSS would be the Cocktail Party example. In t
 In this project we are prefroming Real-Time BSS where the input is processed in real time using an experimental microphone set up. The user will be able to perform such algorithim on an interactive GUI using Python's inbuilt library called Tkinter. On the GUI the user is able to play the original audio as well as the seperated sources after performing the Real-Time BSS. There is also a plotting function on the GUI that will show an interactive plot of the signals and how they were seperated. 
 
 Below is a snip bit of the given program. 
-! [plot] (Screen Shot 2023-12-18 at 2.47.16 PM.png)
+![plot](Screen Shot 2023-12-18 at 2.47.16 PM.png)
 
 There are two main files that make up this project. 
 
