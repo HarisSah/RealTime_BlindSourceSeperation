@@ -1,4 +1,4 @@
-# RealTime_BlindSourceSeperation
+## RealTime_BlindSourceSeperation
 Performing Real Time Blind Source Seperation (BSS) using Fast ICA and presenting it on an interactive GUI using Tkinter
 
 Background:
@@ -8,13 +8,13 @@ A very famous example of utilizing BSS would be the Cocktail Party example. In t
 
 In this project we are prefroming Real-Time BSS where the input is processed in real time using an experimental microphone set up. The user will be able to perform such algorithim on an interactive GUI using Python's inbuilt library called Tkinter. On the GUI the user is able to play the original audio as well as the seperated sources after performing the Real-Time BSS. There is also a plotting function on the GUI that will show an interactive plot of the signals and how they were seperated. 
 
-Below is a snip bit of the given program. 
-![plot](./RealTime_BlindSourceSeperation/Screen Shot 2023-12-18 at 2.47.16 PM.png)
-
 There are two main files that make up this project. 
 
 1) Wavefile Implementation
 2) Real-Time/Microphones
 
-Wavefile Implementation:
+#Wavefile Implementation:
 The first implementation takes in two wavefiles that contain a mixed signal of two distinct sounds. These wavefiles are recorded as two distinct voices that are mixed together. 
+
+#Real-Time Microphone Implementation
+The second implmentation uses recorded realtime audio that uses a microphone setup and records two distinct sounds. In our demo we used my voice simulating the speech of a train conductor (human voice) and music that is playing. 
