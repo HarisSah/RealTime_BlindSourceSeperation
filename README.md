@@ -14,7 +14,10 @@ There are two main files that make up this project.
 2) Real-Time/Microphones
 
 # Wavefile Implementation:
-The first implementation takes in two wavefiles that contain a mixed signal of two distinct sounds. These wavefiles are recorded as two distinct voices that are mixed together. 
+The first implementation takes in two wavefiles that contain a mixed signal of two distinct sounds. These wavefiles are recorded as two distinct voices that are mixed together. We applied BSS to seperate the sounds and store the result in two new spearated wavefiles. 
 
 # Real-Time Microphone Implementation
-The second implmentation uses recorded realtime audio that uses a microphone setup and records two distinct sounds. In our demo we used my voice simulating the speech of a train conductor (human voice) and music that is playing. 
+The second implmentation uses recorded realtime audio that uses a microphone setup and records two distinct sounds. In our demo we used my voice simulating the speech of a train conductor (human voice) and music that is playing. We also used Lofi hip hop music in the other microphone to simulate a more softer version of music to prove that BSS can work irresepctive of the sound type, frequency, duration, or any other paramter that defines the given sound signal. 
+
+
+
