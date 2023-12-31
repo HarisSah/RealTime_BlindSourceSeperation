@@ -13,8 +13,8 @@ There are two main files that make up this project.
 1) Wavefile Implementation
 2) Real-Time/Microphones
 
-#Wavefile Implementation:
+# Wavefile Implementation:
 The first implementation takes in two wavefiles that contain a mixed signal of two distinct sounds. These wavefiles are recorded as two distinct voices that are mixed together. 
 
-#Real-Time Microphone Implementation
+# Real-Time Microphone Implementation
 The second implmentation uses recorded realtime audio that uses a microphone setup and records two distinct sounds. In our demo we used my voice simulating the speech of a train conductor (human voice) and music that is playing. 
