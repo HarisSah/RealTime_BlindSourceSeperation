@@ -19,5 +19,5 @@ The first implementation takes in two wavefiles that contain a mixed signal of t
 # Real-Time Microphone Implementation
 The second implmentation uses recorded realtime audio that uses a microphone setup and records two distinct sounds. In our demo we used my voice simulating the speech of a train conductor (human voice) and music that is playing. We also used Lofi hip hop music in the other microphone to simulate a more softer version of music to prove that BSS can work irresepctive of the sound type, frequency, duration, or any other paramter that defines the given sound signal. 
 
-
-
+# Moreover
+After we processed the sound sources through the fast ICA algorithim; one might ask how do we know if the resulted spereated signals are correct? We used the Short Time Fourier Transform algorithim to check if 
