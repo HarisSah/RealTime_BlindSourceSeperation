@@ -18,6 +18,12 @@ class BSSApp:
         self.result_signal_2 = None
         self.result_signal_3 = None
 
+        # flags to check
+        # Audio seperation is done - Used when original_signal, result_signal_ are still None
+        # Some audio is playing - To prevent play action happening multiple times
+        self.audio_seperation_done = False
+        self.audio_playing_flag = False
+
         # Create buttons
         self.play_button_1 = tk.Button(root, text="PLAY ORIGINAL", command=lambda: self.original_audio())
         self.start_button = tk.Button(root, text="START", command=self.run_ica)
@@ -27,7 +33,10 @@ class BSSApp:
         self.quit_button = tk.Button(root, text="QUIT", command=root.destroy)
 
         # Create status label
-        self.status_label = tk.Label(root, text="READY", fg="green")
+        self.status_label = tk.Label(root, text="READY" if self.original_signal else "CLICK START", fg="green")
+
+        # Audio playing flag
+        self.audio_playing_label = tk.Label(root, text="")
 
         # Place buttons and label on the window
         self.start_button.pack(pady=10)
@@ -37,11 +46,27 @@ class BSSApp:
         self.plot_button.pack(pady=10)
         self.quit_button.pack(pady=10)
         self.status_label.pack(pady=10)
+        self.audio_playing_label.pack(pady=10)
 
         # Initialize PyAudio
         self.p = pyaudio.PyAudio()
 
     def original_audio(self, duration=5):
+
+        # If audio seperation is not done then no original signal is present, return
+        if not self.audio_seperation_done:
+            return
+
+        # If some audio playing return
+        if self.audio_playing_flag:
+            return
+        
+        # If audio not playing, set audio playing flag
+        # Change audio playing label
+        self.audio_playing_flag = True
+        self.audio_playing_label.config(text="Audio playing...", fg="red")
+        self.root.update()
+
         stream = self.p.open(format=pyaudio.paInt16,
                              channels=1,
                              rate=48000,
@@ -98,7 +123,25 @@ class BSSApp:
         # Call plot_signals to update the plot
         self.plot_signals()
 
+        # Set audio seperation done flag
+        self.audio_seperation_done = True
+
     def play_audio(self, data, duration):
+
+        # If audio seperation is not done then return
+        if not self.audio_seperation_done:
+            return
+
+        # If some audio playing return
+        if self.audio_playing_flag:
+            return
+        
+        # If audio not playing, set audio playing flag
+        # Change audio playing label
+        self.audio_playing_flag = True
+        self.audio_playing_label.config(text="Audio playing...", fg="red")
+        self.root.update()
+
         stream = self.p.open(format=pyaudio.paInt16,
                              channels=1,
                              rate=48000,
@@ -113,6 +156,13 @@ class BSSApp:
         self.root.after(int(duration * 1000), lambda: self.stop_audio(stream))
 
     def stop_audio(self, stream):
+
+        # Audio playing finished, unset audio playing flag
+        # Change audio playing label
+        self.audio_playing_flag = False
+        self.audio_playing_label.config(text="")
+        self.root.update()
+
         stream.stop_stream()
         stream.close()
 
